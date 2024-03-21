@@ -12,10 +12,13 @@ import PermIdentityIcon from "@mui/icons-material/PermIdentity";
 import PendingOutlinedIcon from "@mui/icons-material/PendingOutlined";
 import PostBox from "./PostBox";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
+import { ProfileContext } from "../contextAPI";
 
 const LeftSidebar = (): JSX.Element => {
   const [isPostBoxOpen, setPostBoxOpen] = useState(false);
+  const profile = useContext(ProfileContext);
 
   return (
     <div className="w-2/12">
@@ -36,58 +39,89 @@ const LeftSidebar = (): JSX.Element => {
               />
               <p className="text-sm text-violet-400 font-bold">Drafts</p>
             </div>
-            <PostBox />
+            <PostBox
+              profileURL={profile?.profile.profileURL}
+              userId={profile?.id}
+            />
           </div>
         </div>
       </div>
 
-      <NavigateButton Logo={<XIcon />} text="" isWithText={false} />
-      <NavigateButton Logo={<HomeIcon />} text={"Home"} isWithText={true} />
-      <NavigateButton
-        Logo={<SearchIcon />}
-        text={"Explore"}
-        isWithText={true}
-      />
-      <NavigateButton
-        Logo={<NotificationsIcon />}
-        text={"Notifications"}
-        isWithText={true}
-      />
-      <NavigateButton
-        Logo={<MailOutlineIcon />}
-        text={"Messages"}
-        isWithText={true}
-      />
-      <NavigateButton Logo={<EditIcon />} text={"Grok"} isWithText={true} />
-      <NavigateButton Logo={<ListAltIcon />} text={"Lists"} isWithText={true} />
-      <NavigateButton
-        Logo={<BookmarkBorderIcon />}
-        text={"Bookmarks"}
-        isWithText={true}
-      />
-      <NavigateButton
-        Logo={<PeopleOutlineIcon />}
-        text={"Communities"}
-        isWithText={true}
-      />
-      <NavigateButton Logo={<XIcon />} text={"Premium"} isWithText={true} />
-      <NavigateButton
-        Logo={<PermIdentityIcon />}
-        text={"Profile"}
-        isWithText={true}
-      />
-      <NavigateButton
-        Logo={<PendingOutlinedIcon />}
-        text={"More"}
-        isWithText={true}
-      />
+      <div className="h-full flex flex-col justify-between">
+        <div>
+          <NavigateButton Logo={<XIcon />} text="" isWithText={false} />
+          <NavigateButton Logo={<HomeIcon />} text={"Home"} isWithText={true} />
+          <NavigateButton
+            Logo={<SearchIcon />}
+            text={"Explore"}
+            isWithText={true}
+          />
+          <NavigateButton
+            Logo={<NotificationsIcon />}
+            text={"Notifications"}
+            isWithText={true}
+          />
+          <NavigateButton
+            Logo={<MailOutlineIcon />}
+            text={"Messages"}
+            isWithText={true}
+          />
+          <NavigateButton Logo={<EditIcon />} text={"Grok"} isWithText={true} />
+          <NavigateButton
+            Logo={<ListAltIcon />}
+            text={"Lists"}
+            isWithText={true}
+          />
+          <NavigateButton
+            Logo={<BookmarkBorderIcon />}
+            text={"Bookmarks"}
+            isWithText={true}
+          />
+          <NavigateButton
+            Logo={<PeopleOutlineIcon />}
+            text={"Communities"}
+            isWithText={true}
+          />
+          <NavigateButton Logo={<XIcon />} text={"Premium"} isWithText={true} />
+          <NavigateButton
+            Logo={<PermIdentityIcon />}
+            text={"Profile"}
+            isWithText={true}
+          />
+          <NavigateButton
+            Logo={<PendingOutlinedIcon />}
+            text={"More"}
+            isWithText={true}
+          />
 
-      <button
-        className="rounded-full bg-blue-600 w-full py-2  my-3"
-        onClick={() => setPostBoxOpen(true)}
-      >
-        Post
-      </button>
+          <button
+            className="rounded-full bg-blue-600 w-full py-2  my-3"
+            onClick={() => setPostBoxOpen(true)}
+          >
+            Post
+          </button>
+        </div>
+
+        <div className="flex justify-evenly items-center py-3">
+          {/* profile pic */}
+          <div>
+            <img
+              className="w-8 h-8 rounded-full"
+              src={profile?.profile?.profileURL}
+              alt="profile"
+            />
+          </div>
+
+          {/* username and fullname */}
+          <div>
+            <p className="font-bold">{profile?.profile.fullName}</p>
+            <p className="text-xs text-stone-500">@{profile?.username}</p>
+          </div>
+
+          {/* dots icon */}
+          <MoreHorizIcon fontSize="small" />
+        </div>
+      </div>
     </div>
   );
 };

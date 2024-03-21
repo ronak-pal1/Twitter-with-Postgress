@@ -4,15 +4,54 @@ import RightSidebar from "../components/RightSidebar";
 import MailOutlineOutlinedIcon from "@mui/icons-material/MailOutlineOutlined";
 import KeyboardDoubleArrowUpOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowUpOutlined";
 import KeyboardDoubleArrowDownOutlinedIcon from "@mui/icons-material/KeyboardDoubleArrowDownOutlined";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ProfileContext } from "../contextAPI";
 
 const Homepage = (): JSX.Element => {
   const [isMessageBoxOpen, setMessageBoxOpen] = useState(false);
+  const [profile, setProfile] = useState({
+    id: 0,
+    username: "",
+    profile: { fullName: "", profileURL: "" },
+  });
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = window.localStorage.getItem("authToken");
+
+    if (!token) navigate("/login");
+
+    fetch("http://localhost:3000/profile", {
+      method: "GET",
+      mode: "cors",
+      headers: {
+        "Conten-Type": "application/json",
+        Authorization: token ? token : "",
+      },
+    })
+      .then((response) => response.json())
+      .then((profile) => {
+        console.log(profile);
+        if (!profile.success) {
+          window.localStorage.removeItem("authToken");
+          navigate("login");
+        }
+
+        setProfile(profile);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  }, []);
 
   return (
     <div className="text-white flex flex-1 w-3/4 mx-auto space-x-3 z-0">
-      <LeftSidebar />
-      <Middlebar />
+      <ProfileContext.Provider value={profile}>
+        <LeftSidebar />
+        <Middlebar />
+      </ProfileContext.Provider>
+
       <RightSidebar />
 
       {/* small message box */}

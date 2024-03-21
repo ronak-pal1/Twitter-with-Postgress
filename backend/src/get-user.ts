@@ -9,6 +9,8 @@ async function main(username: string) {
     },
   });
 
+  // console.log(user);
+
   return user;
 }
 
@@ -16,7 +18,6 @@ export const getUser = async (username: string) => {
   const user = await main(username)
     .then(async (user) => {
       await prisma.$disconnect();
-      console.log(user);
       return user;
     })
     .catch(async (e) => {
@@ -27,3 +28,5 @@ export const getUser = async (username: string) => {
 
   return user;
 };
+
+// getUser("ronakpal1");

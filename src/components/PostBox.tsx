@@ -1,4 +1,3 @@
-import PROFILE from "../assets/IMG_20231225_201259_553.jpg";
 import PublicOutlinedIcon from "@mui/icons-material/PublicOutlined";
 import ImageOutlinedIcon from "@mui/icons-material/ImageOutlined";
 import GifBoxOutlinedIcon from "@mui/icons-material/GifBoxOutlined";
@@ -6,13 +5,23 @@ import BallotOutlinedIcon from "@mui/icons-material/BallotOutlined";
 import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined";
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
-import { useState } from "react";
-const PostBox = (): JSX.Element => {
+import { useRef, useState } from "react";
+const PostBox = ({
+  profileURL,
+  userId,
+  setIsTweetPosted,
+}: {
+  profileURL: string;
+  userId: number;
+  setIsTweetPosted: React.Dispatch<React.SetStateAction<boolean>>;
+}): JSX.Element => {
   const [isPlaceholder, setIsPlaceholder] = useState(false);
   const [tweet, setTweet] = useState("");
+  const [isFocusedOnce, setIsFocusedOnce] = useState(false);
+  const inputRef = useRef("");
 
   const focusIt = () => {
-    setIsPlaceholder(true);
+    setIsFocusedOnce(true);
   };
 
   const blurIt = () => {
@@ -20,13 +29,37 @@ const PostBox = (): JSX.Element => {
     else setIsPlaceholder(false);
   };
 
-  const postTweet = () => {};
+  const postTweet = () => {
+    const token = window.localStorage.getItem("authToken");
+
+    console.log(tweet, userId);
+    fetch("http://localhost:3000/tweet", {
+      method: "POST",
+      mode: "cors",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: token ? token : "",
+      },
+      body: JSON.stringify({ tweet, userId }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+
+        setIsTweetPosted((current) => !current);
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+
+    inputRef.current.innerText = "";
+  };
 
   return (
     <div className="flex w-full space-x-3 p-5 border-b border-b-stone-800">
       {/* Left area */}
       <div>
-        <img className="w-8 h-8 rounded-full" src={PROFILE} alt="profile" />
+        <img className="w-8 h-8 rounded-full" src={profileURL} alt="profile" />
       </div>
 
       {/* Right area */}
@@ -35,28 +68,36 @@ const PostBox = (): JSX.Element => {
           <div
             role="textbox"
             contentEditable
+            ref={inputRef}
             aria-placeholder="What is happening in tech?!"
             id="tweet-box"
-            className={`outline-none border-none bg-transparent text-lg w-full ${
+            className={`outline-none border-none bg-transparent text-lg w-full cursor-text ${
               isPlaceholder
                 ? "before:hidden"
                 : "before:content-[attr(aria-placeholder)] before:block"
             }    before:text-gray-500`}
             onFocus={focusIt}
             onBlur={blurIt}
-            onInput={(e) => setTweet(e.nativeEvent.target?.innerText)}
+            onInput={(e) => {
+              if (!isPlaceholder) setIsPlaceholder(true);
+              setTweet(e.nativeEvent.target?.innerText);
+            }}
           ></div>
 
           {/* focus:before:content-[''] */}
         </div>
-        <div className="flex space-x-2 mt-3">
+        <div className={`space-x-2 mt-3 ${isFocusedOnce ? "flex" : "hidden"}`}>
           <PublicOutlinedIcon fontSize="small" htmlColor="#7598f8" />
           <p className="text-violet-400 font-bold text-sm">
             Everyone can reply
           </p>
         </div>
 
-        <div className="flex justify-between items-center border-t border-t-stone-500 p-3">
+        <div
+          className={`flex justify-between items-center ${
+            isFocusedOnce ? "border-t border-t-stone-500 p-3" : ""
+          }`}
+        >
           {/* Left section */}
           <div className="space-x-3 ">
             <ImageOutlinedIcon fontSize="small" htmlColor="#7598f8" />
@@ -70,7 +111,7 @@ const PostBox = (): JSX.Element => {
           {/* Right section */}
           <div>
             <button
-              className="rounded-full bg-blue-600 w-fit py-1 text-sm px-4"
+              className="rounded-full bg-blue-600 w-fit py-1 text-sm px-4 transition-transform hover:scale-105 active:scale-95"
               onClick={postTweet}
             >
               Post

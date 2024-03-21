@@ -5,6 +5,9 @@ const zod = require("zod");
 const bcrypt = require("bcrypt");
 const { createUser } = require("./dist/create-user");
 const { getUser } = require("./dist/get-user");
+const { getProfile } = require("./dist/get-profile");
+const { createTweet } = require("./dist/create-tweet");
+const { getTweets } = require("./dist/get-tweets");
 
 const serverJWTPass = "test1234";
 
@@ -78,18 +81,69 @@ app.post("/signup", (req, res) => {
       res.json({ success: "User signed up successfully" });
     } catch (e) {
       console.log(e);
-      res.status(500).json({ ErrorMsg: "Problem on storing your datas" });
+      res
+        .status(500)
+        .json({ success: false, ErrorMsg: "Problem on storing your datas" });
     }
   } else {
-    res.status(403).json({ ErrorMsg: "Signup form is not filled properly" });
+    res
+      .status(403)
+      .json({ success: false, ErrorMsg: "Signup form is not filled properly" });
+  }
+});
+
+app.get("/profile", async (req, res) => {
+  const authToken = req.headers.authorization;
+
+  try {
+    const result = jwt.verify(authToken, serverJWTPass);
+
+    const profile = await getProfile(result.username);
+
+    res.json({ success: true, ...profile });
+  } catch (e) {
+    res.status(401).json({ success: false, ErrorMsg: "unauthorized" });
   }
 });
 
 // route for making a tweet
-app.post("/tweet", (req, res) => {});
+app.post("/tweet", async (req, res) => {
+  const info = req.body;
+  const authToken = req.headers.authorization;
+
+  try {
+    const result = jwt.verify(authToken, serverJWTPass);
+
+    const tweet = await createTweet({
+      tweetText: info.tweet,
+      userId: info.userId,
+    });
+
+    res.json({ success: true, ...tweet });
+  } catch (e) {
+    console.log(e);
+
+    res.status(411).json({ success: false, ErrorMsg: "unauthorized" });
+  }
+});
 
 // route for getting all the tweets
-app.get("/tweets", (req, res) => {});
+app.get("/tweets", async (req, res) => {
+  const skip = parseInt(req.query.skip);
+  const take = parseInt(req.query.take);
+  const token = req.headers.authorization;
+
+  try {
+    const result = jwt.verify(token, serverJWTPass);
+
+    const tweets = await getTweets(skip, take);
+
+    res.json({ success: true, tweets: tweets });
+  } catch (e) {
+    console.log(e);
+    res.status(411).json({ success: false, ErrorMsg: "unauthorized" });
+  }
+});
 
 app.listen(3000, () => {
   console.log("The twitter server is listening to 3000");
