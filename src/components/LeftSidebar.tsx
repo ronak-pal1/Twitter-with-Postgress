@@ -19,6 +19,13 @@ import { ProfileContext } from "../contextAPI";
 const LeftSidebar = (): JSX.Element => {
   const [isPostBoxOpen, setPostBoxOpen] = useState(false);
   const profile = useContext(ProfileContext);
+  const [isLogoutMenuOpen, setIsLogoutMenuOpen] = useState(false);
+
+  const logout = () => {
+    window.localStorage.removeItem("authToken");
+
+    window.location.reload();
+  };
 
   return (
     <div className="w-2/12">
@@ -102,7 +109,18 @@ const LeftSidebar = (): JSX.Element => {
           </button>
         </div>
 
-        <div className="flex justify-evenly items-center py-3">
+        <div className="flex justify-evenly items-center py-3 relative">
+          {isLogoutMenuOpen && (
+            <div className="absolute -top-14 -right-20 mb-3 bg-stone-900 w-24 h-20 rounded-md">
+              <div
+                className="w-full text-center p-1 hover:bg-stone-800 rounded-md cursor-pointer"
+                onClick={logout}
+              >
+                Logout
+              </div>
+            </div>
+          )}
+
           {/* profile pic */}
           <div>
             <img
@@ -119,7 +137,11 @@ const LeftSidebar = (): JSX.Element => {
           </div>
 
           {/* dots icon */}
-          <MoreHorizIcon fontSize="small" />
+          <MoreHorizIcon
+            fontSize="small"
+            className="cursor-pointer"
+            onClick={() => setIsLogoutMenuOpen(!isLogoutMenuOpen)}
+          />
         </div>
       </div>
     </div>

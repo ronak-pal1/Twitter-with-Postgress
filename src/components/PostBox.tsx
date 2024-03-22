@@ -6,6 +6,7 @@ import EmojiEmotionsOutlinedIcon from "@mui/icons-material/EmojiEmotionsOutlined
 import EventNoteOutlinedIcon from "@mui/icons-material/EventNoteOutlined";
 import LocationOnOutlinedIcon from "@mui/icons-material/LocationOnOutlined";
 import { useRef, useState } from "react";
+import EmojiPicker from "emoji-picker-react";
 const PostBox = ({
   profileURL,
   userId,
@@ -18,6 +19,7 @@ const PostBox = ({
   const [isPlaceholder, setIsPlaceholder] = useState(false);
   const [tweet, setTweet] = useState("");
   const [isFocusedOnce, setIsFocusedOnce] = useState(false);
+  const [isEmojiPanelOpen, setIsEmojiPanelOpen] = useState(false);
   const inputRef = useRef("");
 
   const focusIt = () => {
@@ -27,6 +29,12 @@ const PostBox = ({
   const blurIt = () => {
     if (tweet) setIsPlaceholder(true);
     else setIsPlaceholder(false);
+  };
+
+  const addEmoji = (emoji: string) => {
+    inputRef.current.innerText += emoji;
+
+    setTweet(inputRef.current.innerText);
   };
 
   const postTweet = () => {
@@ -94,16 +102,20 @@ const PostBox = ({
         </div>
 
         <div
-          className={`flex justify-between items-center ${
+          className={`flex justify-between items-center relative ${
             isFocusedOnce ? "border-t border-t-stone-500 p-3" : ""
           }`}
         >
           {/* Left section */}
-          <div className="space-x-3 ">
+          <div className="space-x-3 hover:[&>*]:bg-slate-700 hover:[&>*]:rounded-full">
             <ImageOutlinedIcon fontSize="small" htmlColor="#7598f8" />
             <GifBoxOutlinedIcon fontSize="small" htmlColor="#7598f8" />
             <BallotOutlinedIcon fontSize="small" htmlColor="#7598f8" />
-            <EmojiEmotionsOutlinedIcon fontSize="small" htmlColor="#7598f8" />
+            <EmojiEmotionsOutlinedIcon
+              fontSize="small"
+              htmlColor="#7598f8"
+              onClick={() => setIsEmojiPanelOpen(!isEmojiPanelOpen)}
+            />
             <EventNoteOutlinedIcon fontSize="small" htmlColor="#7598f8" />
             <LocationOnOutlinedIcon fontSize="small" htmlColor="#7598f8" />
           </div>
@@ -117,6 +129,18 @@ const PostBox = ({
               Post
             </button>
           </div>
+
+          {isEmojiPanelOpen && (
+            <div className="absolute top-10 left-24">
+              <EmojiPicker
+                onEmojiClick={(data, e) => {
+                  // console.log(data);
+                  addEmoji(data.emoji);
+                  setIsEmojiPanelOpen(!isEmojiPanelOpen);
+                }}
+              />
+            </div>
+          )}
         </div>
       </div>
     </div>

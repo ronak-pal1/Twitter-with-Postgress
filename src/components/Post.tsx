@@ -6,6 +6,8 @@ import FavoriteBorderOutlinedIcon from "@mui/icons-material/FavoriteBorderOutlin
 import SignalCellularAltOutlinedIcon from "@mui/icons-material/SignalCellularAltOutlined";
 import ChatBubbleOutlineOutlinedIcon from "@mui/icons-material/ChatBubbleOutlineOutlined";
 import VerifiedIcon from "@mui/icons-material/Verified";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { useState } from "react";
 
 const PostButton = ({
   Logo,
@@ -37,8 +39,14 @@ const Post = ({
   tweet: string;
   likes: number;
 }) => {
+  const [likeCount, setLikeCount] = useState(likes);
+  const [isLiked, setIsLiked] = useState(false);
+
   return (
-    <div className="flex w-full space-x-3 p-5 border-b border-b-stone-800 hover:bg-zinc-950 cursor-pointer">
+    <div
+      className="flex w-full space-x-3 p-5 border-b border-b-stone-800 hover:bg-zinc-950 cursor-pointer"
+      onClick={() => {}}
+    >
       {/* Left section */}
       <div>
         <img className="w-8 h-8 rounded-full" src={profileURL} alt="profile" />
@@ -80,8 +88,32 @@ const Post = ({
 
           {/* like icon */}
           <PostButton
-            Logo={<FavoriteBorderOutlinedIcon fontSize="inherit" />}
-            count={likes}
+            Logo={
+              isLiked ? (
+                <FavoriteIcon
+                  fontSize="inherit"
+                  className="hover:bg-stone-700 rounded-full text-red-500"
+                  onClick={() => {
+                    if (!isLiked) {
+                      setLikeCount(likeCount + 1);
+                      setIsLiked(true);
+                    }
+                  }}
+                />
+              ) : (
+                <FavoriteBorderOutlinedIcon
+                  fontSize="inherit"
+                  className="hover:bg-stone-700 rounded-full"
+                  onClick={() => {
+                    if (!isLiked) {
+                      setLikeCount(likeCount + 1);
+                      setIsLiked(true);
+                    }
+                  }}
+                />
+              )
+            }
+            count={likeCount}
           />
 
           {/* view icon */}

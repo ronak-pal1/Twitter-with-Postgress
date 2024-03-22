@@ -35,12 +35,13 @@ const Middlebar = (): JSX.Element => {
   }, [isTweetPosted]);
 
   useEffect(() => {
-    clearInterval(timer);
+    fetchTweets();
+    // clearInterval(timer);
 
-    timer = setInterval(() => {
-      fetchTweets();
-      console.log("fetched");
-    }, 15000);
+    // timer = setInterval(() => {
+    //   fetchTweets();
+    //   console.log("fetched");
+    // }, 15000);
 
     return () => clearInterval(timer);
   }, [profile]);

@@ -58,7 +58,6 @@ app.post("/login", async (req, res) => {
 
       res.json({ success: "User logged in", token });
     } catch (e) {
-      console.log(e);
       res.status(500).json({ ErrorMsg: "Problem on user login" });
     }
   } else {
@@ -74,13 +73,11 @@ app.post("/signup", (req, res) => {
     try {
       bcrypt.hash(info.password, 10, (err, hash) => {
         // now storing the data in the table
-        console.log("database called");
         createUser({ ...info, password: hash });
       });
 
       res.json({ success: "User signed up successfully" });
     } catch (e) {
-      console.log(e);
       res
         .status(500)
         .json({ success: false, ErrorMsg: "Problem on storing your datas" });
@@ -121,8 +118,6 @@ app.post("/tweet", async (req, res) => {
 
     res.json({ success: true, ...tweet });
   } catch (e) {
-    console.log(e);
-
     res.status(411).json({ success: false, ErrorMsg: "unauthorized" });
   }
 });
@@ -140,7 +135,6 @@ app.get("/tweets", async (req, res) => {
 
     res.json({ success: true, tweets: tweets });
   } catch (e) {
-    console.log(e);
     res.status(411).json({ success: false, ErrorMsg: "unauthorized" });
   }
 });
